@@ -8,9 +8,6 @@ interface MyDiagramUserRepository: MongoRepository<MyDiagramUser, String> {
 
     fun findByEmail(email: String): Optional<MyDiagramUser?>
 
-    fun findByEmailAndPassword(email: String, password: String): Optional<MyDiagramUser?>
-
     fun existsByEmail(email: String): Boolean
 
-    fun existsByEmailAndPassword(email: String, password: String): Boolean
 }

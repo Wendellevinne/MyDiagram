@@ -1,5 +1,6 @@
 package br.com.mydiagram.service
 
+import br.com.mydiagram.controller.response.AuthenticationResponse
 import br.com.mydiagram.enums.Errors
 import br.com.mydiagram.exceptions.AlreadyExistentUserException
 import br.com.mydiagram.exceptions.IncorrectPasswordException
@@ -7,32 +8,44 @@ import br.com.mydiagram.exceptions.InexistentUserException
 import br.com.mydiagram.exceptions.UnexpectedSignupBehaviorException
 import br.com.mydiagram.model.MyDiagramUser
 import br.com.mydiagram.repository.MyDiagramUserRepository
+import br.com.mydiagram.security.JwtService
 import br.com.mydiagram.utils.Encrypter
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class MyDiagramUserService(val myDiagramUserRepository: MyDiagramUserRepository) {
+class MyDiagramUserService(
+    private val myDiagramUserRepository: MyDiagramUserRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtService: JwtService,
+    private val authenticationManager: AuthenticationManager
+) {
 
     //TODO Testar o código do login
-    fun login(email: String, password: String): Optional<MyDiagramUser?> {
+    fun login(email: String, pass: String): AuthenticationResponse {
+
         if (!myDiagramUserRepository.existsByEmail(email))
             throw InexistentUserException(Errors.MDU0002.message, Errors.MDU0002.code)
 
-        val comparator = myDiagramUserRepository.findByEmail(email)
-
-        return if (!Encrypter().comparePasswords(comparator.get().password, password)) {
+        try {
+            authenticationManager.authenticate(UsernamePasswordAuthenticationToken(email, pass))
+        } catch (e: Exception){
             throw IncorrectPasswordException(Errors.MDU0003.message, Errors.MDU0003.code)
-        } else {
-            myDiagramUserRepository.findByEmail(email)
         }
+
+        val user = myDiagramUserRepository.findByEmail(email).orElseThrow()
+        val jwtToken = user?.let { jwtService.generateToken(it) }
+        return AuthenticationResponse(jwtToken!!)
     }
 
-    fun signup(myDiagramUser: MyDiagramUser) {
+    fun signup(myDiagramUser: MyDiagramUser): AuthenticationResponse {
 
         var returnValue = false
 
-        try{
+        returnValue = try{
 
             val existentUser = myDiagramUserRepository.findByEmail(myDiagramUser.email)
 
@@ -40,17 +53,11 @@ class MyDiagramUserService(val myDiagramUserRepository: MyDiagramUserRepository)
                 throw AlreadyExistentUserException(Errors.MDU0001.message, Errors.MDU0001.code)
             }
 
-            returnValue = true
+            true
 
         } catch (ex: NoSuchElementException){
 
-            val myDiagramEncryptedUser = MyDiagramUser(
-                myDiagramUser.email, myDiagramUser.fullName,
-                Encrypter().encrypt(myDiagramUser.password), myDiagramUser.role
-            )
-
-            myDiagramUserRepository.save(myDiagramEncryptedUser)
-            returnValue = true
+            true
 
         }
 
@@ -58,16 +65,26 @@ class MyDiagramUserService(val myDiagramUserRepository: MyDiagramUserRepository)
            throw UnexpectedSignupBehaviorException(Errors.MDU0004.message, Errors.MDU0004.code)
         }
 
+        val myDiagramEncryptedUser = MyDiagramUser(
+            myDiagramUser.email, myDiagramUser.fullName,
+            passwordEncoder.encode(myDiagramUser.pass), myDiagramUser.myDiagramUserRoles
+        )
+
+        myDiagramUserRepository.save(myDiagramEncryptedUser)
+
+        val jwtToken = jwtService.generateToken(myDiagramEncryptedUser)
+        return AuthenticationResponse(jwtToken)
+
     }
 
     fun changeProfile(myDiagramUser: MyDiagramUser) {
         if (!myDiagramUserRepository.existsByEmail(myDiagramUser.email))
             throw InexistentUserException(Errors.MDU0002.message, Errors.MDU0002.code)
 
-        if (Encrypter().comparePasswords(myDiagramUser.password, myDiagramUserRepository.findByEmail(myDiagramUser.email).get().password)){
+        if (Encrypter().comparePasswords(myDiagramUser.pass, myDiagramUserRepository.findByEmail(myDiagramUser.email).get().pass)){
             val myDiagramEncryptedUser = MyDiagramUser(
                 myDiagramUser.email, myDiagramUser.fullName,
-                Encrypter().encrypt(myDiagramUser.password), myDiagramUser.role
+                passwordEncoder.encode(myDiagramUser.pass), myDiagramUser.myDiagramUserRoles
             )
 
             myDiagramUserRepository.save(myDiagramEncryptedUser)

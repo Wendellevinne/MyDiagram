@@ -12,7 +12,7 @@ class Encrypter {
         return DatatypeConverter.printHexBinary(bytes)
     }
 
-    fun comparePasswords(password: String, hashedPassword: String): Boolean =
-        encrypt(password) == hashedPassword
+    fun comparePasswords(pass: String, hashedPassword: String): Boolean =
+        encrypt(pass) == hashedPassword
 
 }
