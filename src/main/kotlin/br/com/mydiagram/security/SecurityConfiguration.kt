@@ -13,15 +13,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class SecurityConfiguration(private val jwtAuthFilter: JwtAuthenticationFilter, private val authenticationProvider: AuthenticationProvider) {
 
+    val SwaggerI : String = "/v3/api-docs/**"
+    val SwaggerII : String = "/v3/api-docs.yaml"
+    val SwaggerIII : String = "/swagger-ui/**"
+    val SwaggerIV : String = "/swagger-ui.html"
+
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain{
          http
              .csrf()
              .disable()
              .authorizeHttpRequests()
-             .requestMatchers("/api/v1/mydiagram/login")
+             .requestMatchers("/api/v1/mydiagram/users/login")
              .permitAll()
-             .requestMatchers("/api/v1/mydiagram/signup")
+             .requestMatchers("/api/v1/mydiagram/users/signup")
+             .permitAll()
+             .requestMatchers(SwaggerI, SwaggerII, SwaggerIII, SwaggerIV)
              .permitAll()
              .anyRequest()
              .authenticated()

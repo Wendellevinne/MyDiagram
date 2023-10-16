@@ -38,7 +38,7 @@ class MyDiagramUserService(
 
         val user = myDiagramUserRepository.findByEmail(email).orElseThrow()
         val jwtToken = user?.let { jwtService.generateToken(it) }
-        return AuthenticationResponse(jwtToken!!)
+        return AuthenticationResponse(jwtToken!!, myDiagramUserRepository.findByEmail(email).get().fullName)
     }
 
     fun signup(myDiagramUser: MyDiagramUser): AuthenticationResponse {
@@ -52,13 +52,9 @@ class MyDiagramUserService(
             if (existentUser.get().email == myDiagramUser.email) {
                 throw AlreadyExistentUserException(Errors.MDU0001.message, Errors.MDU0001.code)
             }
-
             true
-
         } catch (ex: NoSuchElementException){
-
             true
-
         }
 
         if (!returnValue){
@@ -73,8 +69,12 @@ class MyDiagramUserService(
         myDiagramUserRepository.save(myDiagramEncryptedUser)
 
         val jwtToken = jwtService.generateToken(myDiagramEncryptedUser)
-        return AuthenticationResponse(jwtToken)
+        return AuthenticationResponse(jwtToken, myDiagramUser.fullName)
 
+    }
+
+    fun getProfile(email: String): Optional<MyDiagramUser?> {
+        return myDiagramUserRepository.findByEmail(email)
     }
 
     fun changeProfile(myDiagramUser: MyDiagramUser) {

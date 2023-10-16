@@ -15,7 +15,7 @@ import kotlin.collections.HashMap
 @Service
 class JwtService {
 
-    private val SECRET_KEY: String = "9ff142a453f665a69c82dd08a785d66bfb289cbea65abe3c8208286b2470aaf6"
+    private val key: String = "9ff142a453f665a69c82dd08a785d66bfb289cbea65abe3c8208286b2470aaf6"
     fun extractUsername(token: String): String {
         return extractClaim(token, Claims::getSubject)
     }
@@ -63,7 +63,7 @@ class JwtService {
     }
 
     private fun getSignInKey(): Key {
-        val keyBytes = Decoders.BASE64.decode(SECRET_KEY)
+        val keyBytes = Decoders.BASE64.decode(key)
         return Keys.hmacShaKeyFor(keyBytes)
     }
 

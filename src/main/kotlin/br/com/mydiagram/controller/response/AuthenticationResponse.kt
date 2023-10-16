@@ -1,4 +1,4 @@
 package br.com.mydiagram.controller.response
 
 
-data class AuthenticationResponse(val token: String)
+data class AuthenticationResponse(val token: String, val name: String?)

@@ -1,6 +1,7 @@
 package br.com.mydiagram.controller
 
 import br.com.mydiagram.controller.request.GetMyDiagramUserRequest
+import br.com.mydiagram.controller.request.GetMyDiagramUserWithoutPassRequest
 import br.com.mydiagram.controller.request.PostMyDiagramUserRequest
 import br.com.mydiagram.controller.request.PutMyDiagramUserRequest
 import br.com.mydiagram.controller.response.AuthenticationResponse
@@ -12,19 +13,22 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/api/v1/mydiagram")
+@RequestMapping("/api/v1/mydiagram/users")
 class MyDiagramUserController(val myDiagramUserService: MyDiagramUserService) {
 
-    //TODO Criar um getMyDiagramUser Request
     @GetMapping("/login")
-    fun login(@RequestBody getMyDiagramUserRequest: GetMyDiagramUserRequest): ResponseEntity<AuthenticationResponse>{
-        return ResponseEntity.ok(myDiagramUserService.login(getMyDiagramUserRequest.email, getMyDiagramUserRequest.pass))
-    }
+    fun login(@RequestBody getMyDiagramUserRequest: GetMyDiagramUserRequest): ResponseEntity<AuthenticationResponse> =
+        ResponseEntity.ok(myDiagramUserService.login(getMyDiagramUserRequest.email, getMyDiagramUserRequest.pass))
+
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     fun signup(@RequestBody myDiagramUser: PostMyDiagramUserRequest) =
         myDiagramUserService.signup(myDiagramUser.toMyDiagramUser())
+
+    @GetMapping("/me")
+    fun getProfile(@RequestBody getMyDiagramUserWithoutPassRequest: GetMyDiagramUserWithoutPassRequest) =
+        ResponseEntity.ok(myDiagramUserService.getProfile(getMyDiagramUserWithoutPassRequest.email))
 
     @PutMapping("/change-profile/{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
