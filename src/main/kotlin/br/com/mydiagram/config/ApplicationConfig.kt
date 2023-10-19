@@ -1,7 +1,7 @@
 package br.com.mydiagram.config
 
 import br.com.mydiagram.enums.Errors
-import br.com.mydiagram.exceptions.InexistentUserException
+import br.com.mydiagram.exceptions.User.InexistentUserException
 import br.com.mydiagram.repository.MyDiagramUserRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

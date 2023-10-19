@@ -5,9 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
 @Document("Diagrams")
-data class Diagram (
+data class Diagram(
     @Id
-    val id: Int,
     val name: String,
     val createdDate: LocalDateTime? = LocalDateTime.now(),
     val modifiedDate: LocalDateTime? = LocalDateTime.now(),

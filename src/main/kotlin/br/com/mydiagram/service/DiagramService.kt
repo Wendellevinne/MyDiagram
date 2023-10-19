@@ -1,20 +1,28 @@
 package br.com.mydiagram.service
 
-class DiagramService {
+import br.com.mydiagram.model.Diagram
+import br.com.mydiagram.repository.DiagramRepository
+import org.springframework.stereotype.Service
 
-    fun getAllDiagrams(){
+@Service
+class DiagramService(
+    diagramRepository: DiagramRepository
+) {
 
+    fun getAllDiagrams(userEmail: String): List<Diagram>{
+
+        return emptyList<Diagram>()
     }
 
     fun createDiagram(){
 
     }
 
-    fun editDiagram(){
+    fun editDiagram(diagramName: String, email: String){
 
     }
 
-    fun deleteDiagram(){
+    fun deleteDiagram(diagramName: String, email: String){
 
     }
 

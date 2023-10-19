@@ -2,10 +2,7 @@ package br.com.mydiagram.service
 
 import br.com.mydiagram.controller.response.AuthenticationResponse
 import br.com.mydiagram.enums.Errors
-import br.com.mydiagram.exceptions.AlreadyExistentUserException
-import br.com.mydiagram.exceptions.IncorrectPasswordException
-import br.com.mydiagram.exceptions.InexistentUserException
-import br.com.mydiagram.exceptions.UnexpectedSignupBehaviorException
+import br.com.mydiagram.exceptions.User.*
 import br.com.mydiagram.model.MyDiagramUser
 import br.com.mydiagram.repository.MyDiagramUserRepository
 import br.com.mydiagram.security.JwtService
@@ -24,8 +21,11 @@ class MyDiagramUserService(
     private val authenticationManager: AuthenticationManager
 ) {
 
-    //TODO Testar o código do login
     fun login(email: String, pass: String): AuthenticationResponse {
+
+        var user: MyDiagramUser? = null
+
+        var jwtToken: String? = null
 
         if (!myDiagramUserRepository.existsByEmail(email))
             throw InexistentUserException(Errors.MDU0002.message, Errors.MDU0002.code)
@@ -36,8 +36,12 @@ class MyDiagramUserService(
             throw IncorrectPasswordException(Errors.MDU0003.message, Errors.MDU0003.code)
         }
 
-        val user = myDiagramUserRepository.findByEmail(email).orElseThrow()
-        val jwtToken = user?.let { jwtService.generateToken(it) }
+        try {
+            user = myDiagramUserRepository.findByEmail(email).orElseThrow()
+            jwtToken = user?.let { jwtService.generateToken(it) }
+        } catch (ex: Exception){
+            throw UnexpectedLoginBehaviorException(Errors.MDU0004.message, Errors.MDU0004.code)
+        }
         return AuthenticationResponse(jwtToken!!, myDiagramUserRepository.findByEmail(email).get().fullName)
     }
 
@@ -58,7 +62,7 @@ class MyDiagramUserService(
         }
 
         if (!returnValue){
-           throw UnexpectedSignupBehaviorException(Errors.MDU0004.message, Errors.MDU0004.code)
+           throw UnexpectedSignupBehaviorException(Errors.MDU0005.message, Errors.MDU0005.code)
         }
 
         val myDiagramEncryptedUser = MyDiagramUser(
@@ -77,6 +81,7 @@ class MyDiagramUserService(
         return myDiagramUserRepository.findByEmail(email)
     }
 
+    //TODO Consertar erro que não grava a senha criptografada no ChangeProfile
     fun changeProfile(myDiagramUser: MyDiagramUser) {
         if (!myDiagramUserRepository.existsByEmail(myDiagramUser.email))
             throw InexistentUserException(Errors.MDU0002.message, Errors.MDU0002.code)
