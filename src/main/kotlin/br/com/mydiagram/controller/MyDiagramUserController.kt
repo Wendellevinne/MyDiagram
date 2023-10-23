@@ -1,16 +1,15 @@
 package br.com.mydiagram.controller
 
-import br.com.mydiagram.controller.request.GetMyDiagramUserRequest
-import br.com.mydiagram.controller.request.GetMyDiagramUserWithoutPassRequest
-import br.com.mydiagram.controller.request.PostMyDiagramUserRequest
-import br.com.mydiagram.controller.request.PutMyDiagramUserRequest
+import br.com.mydiagram.controller.request.user.GetMyDiagramUserRequest
+import br.com.mydiagram.controller.request.user.GetMyDiagramUserWithoutPassRequest
+import br.com.mydiagram.controller.request.user.PostMyDiagramUserRequest
+import br.com.mydiagram.controller.request.user.PutMyDiagramUserRequest
 import br.com.mydiagram.controller.response.AuthenticationResponse
 import br.com.mydiagram.extensions.toMyDiagramUser
 import br.com.mydiagram.service.MyDiagramUserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/mydiagram/users")
@@ -35,7 +34,7 @@ class MyDiagramUserController(val myDiagramUserService: MyDiagramUserService) {
     fun changeProfile(@PathVariable email: String, @RequestBody myDiagramUser: PutMyDiagramUserRequest) =
         myDiagramUserService.changeProfile(myDiagramUser.toMyDiagramUser(email))
 
-    @DeleteMapping("exclude/{email}")
+    @DeleteMapping("/exclude/{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteProfile(@PathVariable email: String) =
         myDiagramUserService.deleteProfile(email)

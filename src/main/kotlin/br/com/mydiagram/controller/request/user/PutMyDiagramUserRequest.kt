@@ -1,4 +1,4 @@
-package br.com.mydiagram.controller.request
+package br.com.mydiagram.controller.request.user
 
 import br.com.mydiagram.enums.MyDiagramUserRoles
 

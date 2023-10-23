@@ -66,8 +66,10 @@ class MyDiagramUserService(
         }
 
         val myDiagramEncryptedUser = MyDiagramUser(
-            myDiagramUser.email, myDiagramUser.fullName,
-            passwordEncoder.encode(myDiagramUser.pass), myDiagramUser.myDiagramUserRoles
+            myDiagramUser.email,
+            myDiagramUser.fullName,
+            passwordEncoder.encode(myDiagramUser.pass),
+            myDiagramUser.myDiagramUserRoles
         )
 
         myDiagramUserRepository.save(myDiagramEncryptedUser)
@@ -77,9 +79,7 @@ class MyDiagramUserService(
 
     }
 
-    fun getProfile(email: String): Optional<MyDiagramUser?> {
-        return myDiagramUserRepository.findByEmail(email)
-    }
+    fun getProfile(email: String): Optional<MyDiagramUser?> = myDiagramUserRepository.findByEmail(email)
 
     //TODO Consertar erro que não grava a senha criptografada no ChangeProfile
     fun changeProfile(myDiagramUser: MyDiagramUser) {
@@ -88,8 +88,10 @@ class MyDiagramUserService(
 
         if (Encrypter().comparePasswords(myDiagramUser.pass, myDiagramUserRepository.findByEmail(myDiagramUser.email).get().pass)){
             val myDiagramEncryptedUser = MyDiagramUser(
-                myDiagramUser.email, myDiagramUser.fullName,
-                passwordEncoder.encode(myDiagramUser.pass), myDiagramUser.myDiagramUserRoles
+                myDiagramUser.email,
+                myDiagramUser.fullName,
+                passwordEncoder.encode(myDiagramUser.pass),
+                myDiagramUser.myDiagramUserRoles
             )
 
             myDiagramUserRepository.save(myDiagramEncryptedUser)

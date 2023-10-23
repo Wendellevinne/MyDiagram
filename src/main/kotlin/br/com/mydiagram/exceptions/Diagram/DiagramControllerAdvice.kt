@@ -58,4 +58,16 @@ class DiagramControllerAdvice {
         return ResponseEntity(error, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(NullDiagramNameException::class)
+    fun handleNullDiagramNameException(ex: NullDiagramNameException, request: WebRequest): ResponseEntity<ErrorResponse>{
+        val error = ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            ex.message,
+            ex.errorCode,
+            null
+        )
+
+        return ResponseEntity(error, HttpStatus.BAD_REQUEST)
+    }
+
 }
