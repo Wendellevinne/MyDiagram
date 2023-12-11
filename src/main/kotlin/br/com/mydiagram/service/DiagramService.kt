@@ -1,11 +1,13 @@
 package br.com.mydiagram.service
 
+import br.com.mydiagram.controller.request.diagram.DeleteDiagramRequest
+import br.com.mydiagram.controller.request.diagram.GetAllDiagramRequest
 import br.com.mydiagram.controller.request.diagram.GetDiagramRequest
-import br.com.mydiagram.controller.request.diagram.PostDiagramRequest
 import br.com.mydiagram.enums.Errors
 import br.com.mydiagram.exceptions.Diagram.*
 import br.com.mydiagram.model.Diagram
 import br.com.mydiagram.repository.DiagramRepository
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -14,17 +16,20 @@ class DiagramService(
     val diagramRepository: DiagramRepository
 ) {
 
-    fun getAllDiagrams(author: String): Optional<List<Diagram>?> = diagramRepository.findAllByAuthor(author)
+    private val logger = KotlinLogging.logger {}
+
+    fun getAllDiagrams(getAllDiagramRequest: GetAllDiagramRequest): Optional<List<Diagram>?> =
+        diagramRepository.findAllByUserId(getAllDiagramRequest.userId)
 
     fun getDiagram(getDiagramRequest: GetDiagramRequest): Diagram {
 
         val selectedDiagram: Diagram
 
-        if (!diagramRepository.existsByNameAndAuthor(getDiagramRequest.name, getDiagramRequest.author))
+        if (!diagramRepository.existsByNameAndUserId(getDiagramRequest.name, getDiagramRequest.userId))
             throw InexistentDiagramException(Errors.DGM0003.code, Errors.DGM0003.message)
 
         try {
-            selectedDiagram = diagramRepository.findByNameAndAuthor(getDiagramRequest.name, getDiagramRequest.author)
+            selectedDiagram = diagramRepository.findByNameAndUserId(getDiagramRequest.name, getDiagramRequest.userId)
         } catch (ex: Exception){
             throw CouldNotOpenDiagramException(Errors.DGM0004.code, Errors.DGM0004.message)
         }
@@ -32,24 +37,21 @@ class DiagramService(
         return selectedDiagram
     }
 
-    fun createDiagram(postDiagramRequest: PostDiagramRequest){
+    fun createDiagram(diagram: Diagram){
 
         val newDiagram: Diagram
 
-        if (postDiagramRequest.name.trim() == "")
+        if (diagram.name.trim() == "")
             throw NullDiagramNameException(Errors.DGM0001.code, Errors.DGM0001.message)
 
-        if (diagramRepository.existsByNameAndAuthor(postDiagramRequest.name, postDiagramRequest.author))
+        if (diagramRepository.existsByNameAndUserId(diagram.name, diagram.userId))
             throw AlreadyExistentDiagramException(Errors.DGM0002.code, Errors.DGM0002.message)
 
         try {
-            //TODO Transformar em uma ExtensionFunction
             newDiagram = Diagram(
-                name = postDiagramRequest.name,
-                createdDate = null,
-                modifiedDate = null,
-                listOfElements = mutableListOf(),
-                author = postDiagramRequest.author
+                name = diagram.name,
+                path = diagram.path,
+                userId = diagram.userId
             )
             diagramRepository.save(newDiagram)
         } catch (ex: Exception){
@@ -57,19 +59,21 @@ class DiagramService(
         }
     }
 
-    fun editDiagram(diagramName: String, author: String){
+    fun editDiagram(diagramName: String, userId: String){
 
     }
 
-    fun deleteDiagram(diagramName: String, author: String){
+    fun deleteDiagram(deleteDiagramRequest: DeleteDiagramRequest, userId: String){
 
-        if (diagramName.trim() == "")
+        logger.debug { "Os valores recebidos foram ${deleteDiagramRequest.name} e $userId" }
+
+        if (deleteDiagramRequest.name.trim() == "")
             throw NullDiagramNameException(Errors.DGM0001.code, Errors.DGM0001.message)
 
-        if (!diagramRepository.existsByNameAndAuthor(diagramName, author))
+        if (!diagramRepository.existsByNameAndUserId(deleteDiagramRequest.name, userId))
             throw InexistentDiagramException(Errors.DGM0003.code, Errors.DGM0003.message)
 
-        diagramRepository.delete(diagramRepository.findByNameAndAuthor(diagramName, author))
+        diagramRepository.delete(diagramRepository.findByNameAndUserId(deleteDiagramRequest.name, userId))
     }
 
 

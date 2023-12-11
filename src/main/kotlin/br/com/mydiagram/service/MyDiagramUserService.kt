@@ -86,8 +86,7 @@ class MyDiagramUserService(
         if (!myDiagramUserRepository.existsByEmail(myDiagramUser.email))
             throw InexistentUserException(Errors.MDU0002.message, Errors.MDU0002.code)
 
-        if (Encrypter().comparePasswords(myDiagramUser.pass, myDiagramUserRepository.findByEmail(myDiagramUser.email).get().pass)){
-            val myDiagramEncryptedUser = MyDiagramUser(
+        val myDiagramEncryptedUser = MyDiagramUser(
                 myDiagramUser.email,
                 myDiagramUser.fullName,
                 passwordEncoder.encode(myDiagramUser.pass),
@@ -95,9 +94,6 @@ class MyDiagramUserService(
             )
 
             myDiagramUserRepository.save(myDiagramEncryptedUser)
-        } else {
-            myDiagramUserRepository.save(myDiagramUser)
-        }
     }
 
     fun deleteProfile(email: String) {

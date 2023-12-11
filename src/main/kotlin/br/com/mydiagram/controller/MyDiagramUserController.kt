@@ -15,19 +15,18 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/mydiagram/users")
 class MyDiagramUserController(val myDiagramUserService: MyDiagramUserService) {
 
-    @GetMapping("/login")
+    @GetMapping("/me")
+    fun getProfile(@RequestBody getMyDiagramUserWithoutPassRequest: GetMyDiagramUserWithoutPassRequest) =
+        ResponseEntity.ok(myDiagramUserService.getProfile(getMyDiagramUserWithoutPassRequest.email))
+
+    @PostMapping("/login")
     fun login(@RequestBody getMyDiagramUserRequest: GetMyDiagramUserRequest): ResponseEntity<AuthenticationResponse> =
         ResponseEntity.ok(myDiagramUserService.login(getMyDiagramUserRequest.email, getMyDiagramUserRequest.pass))
-
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     fun signup(@RequestBody myDiagramUser: PostMyDiagramUserRequest) =
         myDiagramUserService.signup(myDiagramUser.toMyDiagramUser())
-
-    @GetMapping("/me")
-    fun getProfile(@RequestBody getMyDiagramUserWithoutPassRequest: GetMyDiagramUserWithoutPassRequest) =
-        ResponseEntity.ok(myDiagramUserService.getProfile(getMyDiagramUserWithoutPassRequest.email))
 
     @PutMapping("/change-profile/{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
