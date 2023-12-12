@@ -58,13 +58,14 @@ class DiagramController(
     @PutMapping("/editDiagram/{name}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun editDiagram(@PathVariable name: String,
+                    @RequestParam newName: String? = null,
                     @RequestPart("file") file: MultipartFile,
                     @RequestHeader("Authorization") authorization: String){
         if (!authorization.startsWith("Bearer ")){
             throw Exception()
         }
         val userId = jwtService.extractUsername(authorization.substring(7))
-        val editDiagramRequest = EditDiagramRequest(name, userId, file)
+        val editDiagramRequest = EditDiagramRequest(name, newName, userId, file)
         diagramService.editDiagram(editDiagramRequest)
     }
 

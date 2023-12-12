@@ -73,8 +73,8 @@ class DiagramService(
         if (editDiagramRequest.name.trim() == "")
             throw NullDiagramNameException(Errors.DGM0001.code, Errors.DGM0001.message)
 
-        if (diagramRepository.existsByNameAndUserId(editDiagramRequest.name, editDiagramRequest.userId))
-            throw AlreadyExistentDiagramException(Errors.DGM0002.code, Errors.DGM0002.message)
+        if (!diagramRepository.existsByNameAndUserId(editDiagramRequest.name, editDiagramRequest.userId))
+            throw InexistentDiagramException(Errors.DGM0003.code, Errors.DGM0003.message)
 
         val selectedDiagram = getDiagram(
             GetDiagramRequest(editDiagramRequest.name, editDiagramRequest.userId)
@@ -83,15 +83,22 @@ class DiagramService(
         val newContent = fileService.fileConversorToString(fileService.fileConversorToInputStreamResource(editDiagramRequest.diagram))
 
         if (selectedDiagram.file != newContent ||
-            selectedDiagram.name != editDiagramRequest.name){
+            !editDiagramRequest.newName.isNullOrBlank() && selectedDiagram.name != editDiagramRequest.newName){
 
             val editedDiagram = Diagram(
-                name = editDiagramRequest.name,
+                name = editDiagramRequest.newName!!,
                 path = selectedDiagram.path,
                 userId = selectedDiagram.userId,
             )
 
-            fileService.updateFile(editDiagramRequest.diagram)
+            try {
+                fileService.updateFile(editDiagramRequest.diagram, selectedDiagram.path)
+                logger.debug { "Arquivo enviado com sucesso!" }
+            } catch (ex:Exception){
+                throw Exception()
+            }
+
+            diagramRepository.save(editedDiagram)
         }
 
     }

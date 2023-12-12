@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile
 
 data class EditDiagramRequest(
     val name: String,
+    val newName: String?,
     val userId: String,
     val diagram: MultipartFile
 )

@@ -7,8 +7,8 @@ import org.springframework.web.multipart.MultipartFile
 
 @Document("Diagrams")
 data class Diagram(
-    @Id
     val name: String,
+    @Id
     val path: String,
     val userId: String,
     var file: String? = null

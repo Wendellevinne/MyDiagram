@@ -81,7 +81,24 @@ class FileService {
 
     }
 
-    fun updateFile(file: MultipartFile){
+    fun updateFile(file: MultipartFile, originalFilePath: String){
+
+        val filenames = this.getFileswithPath()
+        val contains: Boolean = filenames.contains(originalFilePath)
+        if (!contains){
+            throw Exception()
+        }
+
+        try {
+
+            val fout = FileOutputStream(originalFilePath)
+            fout.write(file.bytes)
+            fout.close()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw Exception("Erro ao enviar o arquivo: $e")
+        }
 
     }
 
