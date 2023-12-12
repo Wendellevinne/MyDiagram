@@ -1,8 +1,9 @@
 package br.com.mydiagram.service
 
 import br.com.mydiagram.controller.request.diagram.DeleteDiagramRequest
-import br.com.mydiagram.controller.request.diagram.GetAllDiagramRequest
+import br.com.mydiagram.controller.request.diagram.EditDiagramRequest
 import br.com.mydiagram.controller.request.diagram.GetDiagramRequest
+import br.com.mydiagram.controller.request.diagram.PostDiagramRequest
 import br.com.mydiagram.enums.Errors
 import br.com.mydiagram.exceptions.Diagram.*
 import br.com.mydiagram.model.Diagram
@@ -13,13 +14,16 @@ import java.util.*
 
 @Service
 class DiagramService(
+    val fileService: FileService,
     val diagramRepository: DiagramRepository
 ) {
 
     private val logger = KotlinLogging.logger {}
 
-    fun getAllDiagrams(getAllDiagramRequest: GetAllDiagramRequest): Optional<List<Diagram>?> =
-        diagramRepository.findAllByUserId(getAllDiagramRequest.userId)
+    fun getAllDiagrams(userId: String): Optional<List<Diagram>?> =
+        diagramRepository.findAllByUserId(userId)
+
+
 
     fun getDiagram(getDiagramRequest: GetDiagramRequest): Diagram {
 
@@ -30,6 +34,7 @@ class DiagramService(
 
         try {
             selectedDiagram = diagramRepository.findByNameAndUserId(getDiagramRequest.name, getDiagramRequest.userId)
+            selectedDiagram.file = fileService.downloadFile(selectedDiagram.path)
         } catch (ex: Exception){
             throw CouldNotOpenDiagramException(Errors.DGM0004.code, Errors.DGM0004.message)
         }
@@ -37,29 +42,57 @@ class DiagramService(
         return selectedDiagram
     }
 
-    fun createDiagram(diagram: Diagram){
+    fun createDiagram(postDiagramRequest: PostDiagramRequest){
 
         val newDiagram: Diagram
 
-        if (diagram.name.trim() == "")
+        if (postDiagramRequest.name.trim() == "")
             throw NullDiagramNameException(Errors.DGM0001.code, Errors.DGM0001.message)
 
-        if (diagramRepository.existsByNameAndUserId(diagram.name, diagram.userId))
+        if (diagramRepository.existsByNameAndUserId(postDiagramRequest.name, postDiagramRequest.userId))
             throw AlreadyExistentDiagramException(Errors.DGM0002.code, Errors.DGM0002.message)
+
+        val filePath = fileService.uploadFile(postDiagramRequest.diagram)
 
         try {
             newDiagram = Diagram(
-                name = diagram.name,
-                path = diagram.path,
-                userId = diagram.userId
+                name = postDiagramRequest.name,
+                path = filePath,
+                userId = postDiagramRequest.userId
             )
             diagramRepository.save(newDiagram)
         } catch (ex: Exception){
             throw CouldNotCreateDiagramException(Errors.DGM0005.code, Errors.DGM0005.message)
         }
+
+
     }
 
-    fun editDiagram(diagramName: String, userId: String){
+    fun editDiagram(editDiagramRequest: EditDiagramRequest) {
+
+        if (editDiagramRequest.name.trim() == "")
+            throw NullDiagramNameException(Errors.DGM0001.code, Errors.DGM0001.message)
+
+        if (diagramRepository.existsByNameAndUserId(editDiagramRequest.name, editDiagramRequest.userId))
+            throw AlreadyExistentDiagramException(Errors.DGM0002.code, Errors.DGM0002.message)
+
+        val selectedDiagram = getDiagram(
+            GetDiagramRequest(editDiagramRequest.name, editDiagramRequest.userId)
+        )
+
+        val newContent = fileService.fileConversorToString(fileService.fileConversorToInputStreamResource(editDiagramRequest.diagram))
+
+        if (selectedDiagram.file != newContent ||
+            selectedDiagram.name != editDiagramRequest.name){
+
+            val editedDiagram = Diagram(
+                name = editDiagramRequest.name,
+                path = selectedDiagram.path,
+                userId = selectedDiagram.userId,
+            )
+
+            fileService.updateFile(editDiagramRequest.diagram)
+        }
 
     }
 

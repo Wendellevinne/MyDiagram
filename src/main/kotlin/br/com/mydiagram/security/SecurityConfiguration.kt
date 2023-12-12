@@ -28,6 +28,8 @@ class SecurityConfiguration(private val jwtAuthFilter: JwtAuthenticationFilter, 
              .permitAll()
              .requestMatchers("/api/v1/mydiagram/users/signup")
              .permitAll()
+             .requestMatchers("/api/v1/mydiagram/diagrams/*")
+             .permitAll()
              .requestMatchers(SwaggerI, SwaggerII, SwaggerIII, SwaggerIV)
              .permitAll()
              .anyRequest()

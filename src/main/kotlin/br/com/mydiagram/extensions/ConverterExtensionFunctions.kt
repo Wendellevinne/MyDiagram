@@ -1,8 +1,10 @@
 package br.com.mydiagram.extensions
 
+import br.com.mydiagram.controller.request.diagram.EditDiagramRequest
 import br.com.mydiagram.controller.request.user.PostMyDiagramUserRequest
 import br.com.mydiagram.controller.request.user.PutMyDiagramUserRequest
 import br.com.mydiagram.enums.MyDiagramUserRoles
+import br.com.mydiagram.model.Diagram
 import br.com.mydiagram.model.MyDiagramUser
 
 fun PostMyDiagramUserRequest.toMyDiagramUser(): MyDiagramUser = MyDiagramUser(
