@@ -69,9 +69,9 @@ class DiagramController(
         diagramService.editDiagram(editDiagramRequest)
     }
 
-    @DeleteMapping("/deleteDiagram/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteDiagram(@RequestBody deleteDiagramRequest: DeleteDiagramRequest, @PathVariable userId: String) =
-        diagramService.deleteDiagram(deleteDiagramRequest, userId)
+//    @DeleteMapping("/deleteDiagram/")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    fun deleteDiagram() =
+//        diagramService.deleteDiagram(deleteDiagramRequest, userId)
 
 }
