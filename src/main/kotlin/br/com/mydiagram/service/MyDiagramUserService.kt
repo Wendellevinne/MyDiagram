@@ -6,7 +6,6 @@ import br.com.mydiagram.exceptions.User.*
 import br.com.mydiagram.model.MyDiagramUser
 import br.com.mydiagram.repository.MyDiagramUserRepository
 import br.com.mydiagram.security.JwtService
-import br.com.mydiagram.utils.Encrypter
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -42,7 +41,7 @@ class MyDiagramUserService(
         } catch (ex: Exception){
             throw UnexpectedLoginBehaviorException(Errors.MDU0004.message, Errors.MDU0004.code)
         }
-        return AuthenticationResponse(jwtToken!!, myDiagramUserRepository.findByEmail(email).get().fullName)
+        return AuthenticationResponse(jwtToken!!, myDiagramUserRepository.findByEmail(email).get().name)
     }
 
     fun signup(myDiagramUser: MyDiagramUser): AuthenticationResponse {
@@ -67,7 +66,7 @@ class MyDiagramUserService(
 
         val myDiagramEncryptedUser = MyDiagramUser(
             myDiagramUser.email,
-            myDiagramUser.fullName,
+            myDiagramUser.name,
             passwordEncoder.encode(myDiagramUser.pass),
             myDiagramUser.myDiagramUserRoles
         )
@@ -75,7 +74,7 @@ class MyDiagramUserService(
         myDiagramUserRepository.save(myDiagramEncryptedUser)
 
         val jwtToken = jwtService.generateToken(myDiagramEncryptedUser)
-        return AuthenticationResponse(jwtToken, myDiagramUser.fullName)
+        return AuthenticationResponse(jwtToken, myDiagramUser.name)
 
     }
 
@@ -88,7 +87,7 @@ class MyDiagramUserService(
 
         val myDiagramEncryptedUser = MyDiagramUser(
                 myDiagramUser.email,
-                myDiagramUser.fullName,
+                myDiagramUser.name,
                 passwordEncoder.encode(myDiagramUser.pass),
                 myDiagramUser.myDiagramUserRoles
             )

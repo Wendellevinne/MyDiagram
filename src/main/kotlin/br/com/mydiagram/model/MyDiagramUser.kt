@@ -23,7 +23,7 @@ class MyDiagramUser(
         example = "Fulano dos Santos Nascimento",
         type = "string"
     )
-    val fullName: String?,
+    val name: String?,
     @field:Schema(
         description = "The password of a user of our website. It must follow a series specifications to be considered valid. They are: \n" +
                 "-> It must have at least 8 digits; \n " +
