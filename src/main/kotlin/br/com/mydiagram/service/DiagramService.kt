@@ -71,14 +71,14 @@ class DiagramService(
 
     fun editDiagram(editDiagramRequest: EditDiagramRequest) {
 
-        if (editDiagramRequest.name.trim() == "")
+        if (editDiagramRequest.newName?.trim() == "")
             throw NullDiagramNameException(Errors.DGM0001.code, Errors.DGM0001.message)
 
-        if (!diagramRepository.existsByNameAndUserId(editDiagramRequest.name, editDiagramRequest.userId))
+        if (!diagramRepository.existsByPathAndUserId(editDiagramRequest.path, editDiagramRequest.userId))
             throw InexistentDiagramException(Errors.DGM0003.code, Errors.DGM0003.message)
 
         val selectedDiagram = getDiagram(
-            GetDiagramRequest(editDiagramRequest.name, editDiagramRequest.userId)
+            GetDiagramRequest(editDiagramRequest.path, editDiagramRequest.userId)
         )
 
         val newContent = fileService.fileConversorToString(fileService.fileConversorToInputStreamResource(editDiagramRequest.diagram))
@@ -87,7 +87,7 @@ class DiagramService(
             !editDiagramRequest.newName.isNullOrBlank() && selectedDiagram.name != editDiagramRequest.newName){
 
             val editedDiagram = Diagram(
-                name = editDiagramRequest.newName!!,
+                name = editDiagramRequest.newName ?: selectedDiagram.name,
                 path = selectedDiagram.path,
                 userId = selectedDiagram.userId,
             )

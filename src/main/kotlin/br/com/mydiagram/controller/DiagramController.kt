@@ -54,9 +54,9 @@ class DiagramController(
         return ResponseEntity.ok(diagramService.createDiagram(postDiagramRequest))
     }
 
-    @PutMapping("/editDiagram/{name}")
+    @PutMapping("/editDiagram")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun editDiagram(@PathVariable name: String,
+    fun editDiagram(@RequestParam path: String,
                     @RequestParam newName: String? = null,
                     @RequestPart("file") file: MultipartFile,
                     @RequestHeader("Authorization") authorization: String){
@@ -64,7 +64,7 @@ class DiagramController(
             throw Exception()
         }
         val userId = jwtService.extractUsername(authorization.substring(7))
-        val editDiagramRequest = EditDiagramRequest(name, newName, userId, file)
+        val editDiagramRequest = EditDiagramRequest(path, newName, userId, file)
         diagramService.editDiagram(editDiagramRequest)
     }
 
