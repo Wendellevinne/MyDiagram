@@ -31,16 +31,15 @@ class DiagramController(
     }
 
     @GetMapping("/getDiagram")
-    fun getDiagram(@RequestParam("name") name: String,
+    fun getDiagram(@RequestParam("path") path: String,
                    @RequestHeader("Authorization") authorization: String): ResponseEntity<Diagram> {
         if (!authorization.startsWith("Bearer ")){
             throw Exception()
         }
         val userId = jwtService.extractUsername(authorization.substring(7))
-        val getDiagramRequest = GetDiagramRequest(name, userId)
+        val getDiagramRequest = GetDiagramRequest(path, userId)
         return ResponseEntity.ok(diagramService.getDiagram(getDiagramRequest))
     }
-
 
     @PostMapping("/createDiagram")
     @ResponseStatus(HttpStatus.CREATED)
@@ -69,9 +68,16 @@ class DiagramController(
         diagramService.editDiagram(editDiagramRequest)
     }
 
-//    @DeleteMapping("/deleteDiagram/")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    fun deleteDiagram() =
-//        diagramService.deleteDiagram(deleteDiagramRequest, userId)
+    @DeleteMapping("/deleteDiagram")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteDiagram(@RequestParam("path") path: String,
+                      @RequestHeader("Authorization") authorization: String){
+        if (!authorization.startsWith("Bearer ")){
+            throw Exception()
+        }
+        val userId = jwtService.extractUsername(authorization.substring(7))
+        val deleteDiagramRequest = DeleteDiagramRequest(path, userId)
+        diagramService.deleteDiagram(deleteDiagramRequest)
+    }
 
 }

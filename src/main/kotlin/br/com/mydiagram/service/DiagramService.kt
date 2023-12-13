@@ -29,11 +29,11 @@ class DiagramService(
 
         val selectedDiagram: Diagram
 
-        if (!diagramRepository.existsByNameAndUserId(getDiagramRequest.name, getDiagramRequest.userId))
+        if (!diagramRepository.existsByPathAndUserId(getDiagramRequest.path, getDiagramRequest.userId))
             throw InexistentDiagramException(Errors.DGM0003.code, Errors.DGM0003.message)
 
         try {
-            selectedDiagram = diagramRepository.findByNameAndUserId(getDiagramRequest.name, getDiagramRequest.userId)
+            selectedDiagram = diagramRepository.findByPathAndUserId(getDiagramRequest.path, getDiagramRequest.userId)
             selectedDiagram.file = fileService.downloadFile(selectedDiagram.path)
         } catch (ex: Exception){
             throw CouldNotOpenDiagramException(Errors.DGM0004.code, Errors.DGM0004.message)
@@ -103,17 +103,20 @@ class DiagramService(
 
     }
 
-    fun deleteDiagram(deleteDiagramRequest: DeleteDiagramRequest, userId: String){
+    fun deleteDiagram(deleteDiagramRequest: DeleteDiagramRequest){
 
-        logger.debug { "Os valores recebidos foram ${deleteDiagramRequest.name} e $userId" }
-
-        if (deleteDiagramRequest.name.trim() == "")
-            throw NullDiagramNameException(Errors.DGM0001.code, Errors.DGM0001.message)
-
-        if (!diagramRepository.existsByNameAndUserId(deleteDiagramRequest.name, userId))
+        if (!diagramRepository.existsByPathAndUserId(deleteDiagramRequest.path, deleteDiagramRequest.userId))
             throw InexistentDiagramException(Errors.DGM0003.code, Errors.DGM0003.message)
 
-        diagramRepository.delete(diagramRepository.findByNameAndUserId(deleteDiagramRequest.name, userId))
+        if (!fileService.deleteFile(deleteDiagramRequest.path)){
+            throw Exception("Não foi possível deletar o arquivo")
+        }
+
+        val selectedDiagram = diagramRepository
+            .findByPathAndUserId(deleteDiagramRequest.path, deleteDiagramRequest.userId)
+
+        diagramRepository.delete(selectedDiagram)
+
     }
 
 

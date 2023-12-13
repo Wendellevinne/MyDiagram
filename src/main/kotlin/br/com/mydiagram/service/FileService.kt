@@ -15,7 +15,7 @@ class FileService {
 
     private val logger = KotlinLogging.logger {  }
 
-    fun getFileswithPath(): MutableList<String> {
+    fun getFilesWithPath(): MutableList<String> {
 
         val folderPath = "src${File.separator}files"
         val directoryPath = Paths.get(folderPath)
@@ -68,7 +68,7 @@ class FileService {
 
     fun downloadFile(filePath: String): String {
 
-        val filenames = this.getFileswithPath()
+        val filenames = this.getFilesWithPath()
         val contains: Boolean = filenames.contains(filePath)
         if (!contains) {
             throw Exception()
@@ -83,7 +83,7 @@ class FileService {
 
     fun updateFile(file: MultipartFile, originalFilePath: String){
 
-        val filenames = this.getFileswithPath()
+        val filenames = this.getFilesWithPath()
         val contains: Boolean = filenames.contains(originalFilePath)
         if (!contains){
             throw Exception()
@@ -98,6 +98,25 @@ class FileService {
         } catch (e: Exception) {
             e.printStackTrace()
             throw Exception("Erro ao enviar o arquivo: $e")
+        }
+
+    }
+
+    fun deleteFile (path: String): Boolean{
+
+        try {
+            val filepath = Paths.get(path)
+            val fileWasDeleted = Files.deleteIfExists(filepath)
+
+            return if (fileWasDeleted){
+                logger.debug { "Arquivo deletado com sucesso" }
+                true
+            } else {
+                logger.debug { "Arquivo não existente" }
+                false
+            }
+        } catch (ex:Exception){
+            throw Exception("Erro ao deletar o arquivo")
         }
 
     }

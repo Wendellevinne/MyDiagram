@@ -1,7 +1,6 @@
 package br.com.mydiagram.controller
 
 import br.com.mydiagram.controller.request.user.GetMyDiagramUserRequest
-import br.com.mydiagram.controller.request.user.GetMyDiagramUserWithoutPassRequest
 import br.com.mydiagram.controller.request.user.PostMyDiagramUserRequest
 import br.com.mydiagram.controller.request.user.PutMyDiagramUserRequest
 import br.com.mydiagram.controller.response.AuthenticationResponse
