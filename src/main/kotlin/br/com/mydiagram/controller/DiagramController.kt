@@ -45,13 +45,13 @@ class DiagramController(
     @ResponseStatus(HttpStatus.CREATED)
     fun createDiagram(@RequestParam("name") name: String,
                       @RequestPart("file") file: MultipartFile,
-                      @RequestHeader("Authorization") authorization: String) {
+                      @RequestHeader("Authorization") authorization: String): ResponseEntity<Diagram> {
         if (!authorization.startsWith("Bearer ")){
             throw Exception()
         }
         val userId = jwtService.extractUsername(authorization.substring(7))
         val postDiagramRequest = PostDiagramRequest(name, userId, file)
-        diagramService.createDiagram(postDiagramRequest)
+        return ResponseEntity.ok(diagramService.createDiagram(postDiagramRequest))
     }
 
     @PutMapping("/editDiagram/{name}")

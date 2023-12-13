@@ -42,7 +42,7 @@ class DiagramService(
         return selectedDiagram
     }
 
-    fun createDiagram(postDiagramRequest: PostDiagramRequest){
+    fun createDiagram(postDiagramRequest: PostDiagramRequest): Diagram {
 
         val newDiagram: Diagram
 
@@ -61,6 +61,7 @@ class DiagramService(
                 userId = postDiagramRequest.userId
             )
             diagramRepository.save(newDiagram)
+            return newDiagram
         } catch (ex: Exception){
             throw CouldNotCreateDiagramException(Errors.DGM0005.code, Errors.DGM0005.message)
         }
