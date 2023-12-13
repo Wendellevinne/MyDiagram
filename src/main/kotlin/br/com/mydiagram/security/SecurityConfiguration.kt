@@ -23,6 +23,8 @@ class SecurityConfiguration(private val jwtAuthFilter: JwtAuthenticationFilter, 
          http
              .csrf()
              .disable()
+             .cors()
+             .and()
              .authorizeHttpRequests()
              .requestMatchers("/api/v1/mydiagram/users/login")
              .permitAll()
