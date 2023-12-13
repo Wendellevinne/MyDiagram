@@ -6,12 +6,14 @@ import java.util.*
 
 interface DiagramRepository: MongoRepository<Diagram, String> {
 
+    fun findAllByUserId(userId: String): Optional<List<Diagram>?>
+
     fun existsByNameAndUserId(name: String, userId: String): Boolean
 
     fun findByPathAndUserId(path: String, userId: String): Diagram
 
     fun existsByPathAndUserId(path: String, userId: String): Boolean
 
-    fun findAllByUserId(userId: String): Optional<List<Diagram>?>
+    fun deleteByPathAndUserId(path: String, userId: String)
 
 }

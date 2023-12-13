@@ -68,7 +68,6 @@ class MyDiagramUserService(
             myDiagramUser.email,
             myDiagramUser.name,
             passwordEncoder.encode(myDiagramUser.pass),
-            myDiagramUser.myDiagramUserRoles
         )
 
         myDiagramUserRepository.save(myDiagramEncryptedUser)
@@ -80,7 +79,6 @@ class MyDiagramUserService(
 
     fun getProfile(email: String): Optional<MyDiagramUser?> = myDiagramUserRepository.findByEmail(email)
 
-    //TODO Consertar erro que não grava a senha criptografada no ChangeProfile
     fun changeProfile(myDiagramUser: MyDiagramUser) {
         if (!myDiagramUserRepository.existsByEmail(myDiagramUser.email))
             throw InexistentUserException(Errors.MDU0002.message, Errors.MDU0002.code)
@@ -89,7 +87,6 @@ class MyDiagramUserService(
                 myDiagramUser.email,
                 myDiagramUser.name,
                 passwordEncoder.encode(myDiagramUser.pass),
-                myDiagramUser.myDiagramUserRoles
             )
 
             myDiagramUserRepository.save(myDiagramEncryptedUser)

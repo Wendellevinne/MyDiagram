@@ -116,7 +116,7 @@ class DiagramService(
         val selectedDiagram = diagramRepository
             .findByPathAndUserId(deleteDiagramRequest.path, deleteDiagramRequest.userId)
 
-        diagramRepository.delete(selectedDiagram)
+        diagramRepository.deleteByPathAndUserId(selectedDiagram.path, selectedDiagram.userId)
 
     }
 

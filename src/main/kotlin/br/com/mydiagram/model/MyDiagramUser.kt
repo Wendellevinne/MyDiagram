@@ -1,6 +1,5 @@
 package br.com.mydiagram.model
 
-import br.com.mydiagram.enums.MyDiagramUserRoles
 import io.swagger.v3.oas.annotations.media.Schema
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -34,17 +33,7 @@ class MyDiagramUser(
         example = "12345As#",
         type = "string"
     )
-    val pass: String,
-    @field:Schema(
-        description = "The roles that a user can have while using our website. There are three existing roles: \n " +
-                "-> OWNER: Default user role. It enables the user to create, save, change and delete diagrams, and create or destroy a session with other users. \n " +
-                "-> EDITOR: \n " +
-                "-> SPECTATOR: \n ",
-        defaultValue = "OWNER",
-        allowableValues = ["OWNER, EDITOR, SPECTATOR"],
-        required = false
-    )
-    val myDiagramUserRoles: MyDiagramUserRoles?
+    val pass: String
     ) : UserDetails {
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
