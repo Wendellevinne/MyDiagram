@@ -7,12 +7,12 @@ import br.com.mydiagram.model.MyDiagramUser
 
 fun PostMyDiagramUserRequest.toMyDiagramUser(): MyDiagramUser = MyDiagramUser(
     email = this.email,
-    name = this.fullName,
+    name = this.name,
     pass = this.pass,
 )
 
 fun PutMyDiagramUserRequest.toMyDiagramUser(email: String): MyDiagramUser = MyDiagramUser(
     email = email,
-    name = this.fullName,
+    name = this.name,
     pass = if (pass == this.pass) pass else this.pass,
 )

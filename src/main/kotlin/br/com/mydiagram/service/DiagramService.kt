@@ -71,9 +71,6 @@ class DiagramService(
 
     fun editDiagram(editDiagramRequest: EditDiagramRequest) {
 
-        if (editDiagramRequest.newName?.trim() == "")
-            throw NullDiagramNameException(Errors.DGM0001.code, Errors.DGM0001.message)
-
         if (!diagramRepository.existsByPathAndUserId(editDiagramRequest.path, editDiagramRequest.userId))
             throw InexistentDiagramException(Errors.DGM0003.code, Errors.DGM0003.message)
 
